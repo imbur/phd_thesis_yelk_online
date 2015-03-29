@@ -1,0 +1,311 @@
+%\documentclass [12pt,letterpaper]{report}
+\documentclass [12pt,letterpaper]{report}
+
+%%Fakesection Standard packages
+\usepackage[cmex10]{amsmath}	% Extra math definitions
+\usepackage{amssymb}
+\usepackage[pdftex]{graphicx}		% PostScript figures
+\graphicspath{{./figs/main/}}
+\DeclareGraphicsExtensions{.pdf,.jpeg,.png}
+\usepackage{setspace}	   % 1.5 spacing
+\usepackage{longtable}     % Tables spanning pages
+\usepackage{algorithm,algorithmic}
+\usepackage{array}
+%\usepackage{mdwmath}
+\usepackage{mdwtab}
+\usepackage[caption=false,font=footnotesize,labelformat=simple]{subfig}
+\renewcommand{\thesubfigure}{(\alph{subfigure})}
+%\usepackage[caption=false,font=normalsize,labelfont=sf,textfont=sf]{subfig}
+% subfig.sty, written by Steven Douglas Cochran, is the modern replacement
+% for subfigure.sty, the latter of which is no longer maintained and is
+% incompatible with some LaTeX packages including fixltx2e. However,
+% subfig.sty requires and automatically loads Axel Sommerfeldt's caption.sty
+% which will override IEEEtran.cls' handling of captions and this will result
+% in non-IEEE style figure/table captions. To prevent this problem, be sure
+% and invoke subfig.sty's "caption=false" package option (available since
+% subfig.sty version 1.3, 2005/06/28) as this is will preserve IEEEtran.cls
+% handling of captions.
+% Note that the Computer Society format requires a larger sans serif font
+% than the serif footnote size font used in traditional IEEE formatting
+% and thus the need to invoke different subfig.sty package options depending
+% on whether compsoc mode has been enabled.
+%
+% The latest version and documentation of subfig.sty can be obtained at:
+% http://www.ctan.org/tex-archive/macros/latex/contrib/subfig/
+
+\usepackage{fixltx2e}
+% fixltx2e, the successor to the earlier fix2col.sty, was written by
+% Frank Mittelbach and David Carlisle. This package corrects a few problems
+% in the LaTeX2e kernel, the most notable of which is that in current
+% LaTeX2e releases, the ordering of single and double column floats is not
+% guaranteed to be preserved. Thus, an unpatched LaTeX2e can allow a
+% single column figure to be placed prior to an earlier double column
+% figure. The latest version and documentation can be found at:
+% http://www.ctan.org/tex-archive/macros/latex/base/
+
+\usepackage[sort]{cite}
+\usepackage{url}
+\usepackage{algorithmic}
+\usepackage{multirow}
+
+% Custom packages
+%\usepackage[first]{datestamp}
+\usepackage[fancyhdr]{McECEThesis}	% Thesis style
+\usepackage{McGillLogo}		% McGill University crest
+\usepackage{listings}
+
+%\usepackage{overpic} (REALLY NOT RECOMMENDED)
+\usepackage{enumitem}
+\usepackage{threeparttable}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{verbatim}
+\usepackage[ddmmyyyy]{datetime}
+\usepackage{framed}
+\usepackage{hyperref}
+% Load the package with the acronym option
+% Needs to be loaded after hyperref for clickable links
+\usepackage[acronyms,nomain]{glossaries}
+\usepackage{glossary-longragged}
+\usepackage{xcolor}
+\usepackage{rotating}
+\usepackage{afterpage}
+\usepackage{changepage}
+\colorlet{darkblue}{blue!25!black}
+\hypersetup{
+colorlinks=true,
+allcolors = darkblue,
+% TODO: For printing activate the command below
+% hidelinks = true % Activate this for printing
+}
+
+%%Fakesection New commands:
+%%%%%%%%
+\newcommand{\superscript}[1]{\ensuremath{^{\textrm{#1}}}}
+\newcommand{\subscript}[1]{\ensuremath{_{\textrm{#1}}}}
+\newcommand{\ssth}[0]{\superscript{th }}
+\newcommand{\ssst}[0]{\superscript{st }}
+\newcommand{\ssnd}[0]{\superscript{nd }}
+\newcommand{\ssrd}[0]{\superscript{rd }}
+\newcommand{\chpRef}[1]{Chapter~\ref{#1}}
+\newcommand{\appRef}[1]{Appendix~\ref{#1}}
+\newcommand{\secRef}[1]{Section~\ref{#1}}
+\newcommand{\eqnRef}[1]{(\ref{#1})}
+\newcommand{\figRef}[1]{Fig.~\ref{#1}}
+\newcommand{\algRef}[1]{Algorithm~\ref{#1}}
+\newcommand{\tableRef}[1]{Table~\ref{#1}}
+\newcommand{\rtm}[0]{\textsuperscript{\textregistered}}
+\newcommand{\tm}[0]{\textsuperscript{\texttrademark}}
+%% Math operators $
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\newcommand{\bigo}[1]{\ensuremath{ O\bigl(#1\bigr)}} % Should be in math environment
+\newcommand{\OpN}[1]{\ensuremath{ \operatorname{#1} }} % Should be in math environment
+\newcommand{\nnz}[0]{\ensuremath{\textrm{\it nnz}}}
+\newcommand{\libName}[1]{{#1}} % Format library names such as deal.II
+\newcommand{\dealName}[0]{{{d}eal.{I}{I}}}
+\newcommand{\cardinal}[1]{\ensuremath{\left\vert{#1}\right\vert}}
+\newcommand{\vn}[1]{\ensuremath{\text{\gls{acr:vn}}_#1}}
+\newcommand{\fn}[1]{\ensuremath{\text{\gls{acr:fn}}_#1}}
+\newcommand{\fnb}[1]{\ensuremath{\text{\gls{acr:b}}_#1}}
+\newcommand{\vnb}[1]{\ensuremath{\text{\gls{acr:b}}_#1}}
+\newcommand{\neih}[1]{\ensuremath{\text{\gls{acr:neih}}(#1)}}
+\newcommand{\neihMinus}[2]{\ensuremath{\text{\gls{acr:neihMinus}}(#1)\setminus #2}}
+\newcommand{\AlgENDLOOP}[0]{\ENDLOOP} % To fix indentation for algorithmic environment
+\newcommand{\AlgENDFOR}[0]{\ENDFOR} % To fix indentation for algorithmic environment
+\newcommand{\AlgENDIF}[0]{\ENDIF} % To fix indentation for algorithmic environment
+
+%%Fakesection Hyphenation:
+%=========
+% correct bad hyphenation here
+\hyphenation{op-tical net-works semi-conduc-tor}
+
+%%%%% KEYWORDS
+% You may want to add these keywords after the abstract
+%%%%%%%%%%%%%%
+% finite element methods, multigrid, Gaussian belief propagation
+%%%%%%%%%%%%%%
+
+%%Fakesection Chapters to be included
+%=========
+% CAUTION: to use includeonly correctly, you need to compile with the below statement commented out first, then compile with the statement uncommented.
+% \includeonly{Chp-RelGaBP}
+
+%%Fakesection Make glossary
+%=========
+% Generate the glossary
+%\makeglossaries
+\input{AcrDef}
+\makenoidxglossaries
+
+%%Fakesection Document heading
+%=========
+\begin{document}
+
+%===== Title page
+
+\title{\vspace{-2cm}Parallel Finite Element Processing\\ Using Gaussian Belief Propagation Inference\\ on Probabilistic Graphical Models}
+\author{Yousef Malek El-Kurdi}
+\organization{%
+\\[0.1in]
+\McGillCrest {!}{1in}\\	% McGill University crest
+\\[0.1in]
+Doctor of Philosophy\\
+Department of Electrical \& Computer Engineering\\
+McGill University\\
+Montreal, Canada}
+\date{\Month\ \number\year}
+\note{%
+{\color{red} \hrule height 0.4ex}
+\vskip 3ex
+A thesis submitted to McGill University in partial fulfillment of the requirements for the degree of Doctor of Philosophy.
+\vskip 3ex
+\copyright\ \the\year\ Yousef El-Kurdi
+%\thanks{}
+}
+
+\maketitle
+
+%===== Justification, spacing for the main text
+\raggedbottom
+% \onehalfspacing
+\doublespacing
+\pagenumbering{roman}
+
+%===== Dedication, Abstract (English and French), & Acknowledgments
+% \section*{\centering \MakeUppercase{Dedication}}
+\section*{~}
+\thispagestyle{empty}% empty page style (?)
+\begin{center}
+\slshape
+To my father and my mother\\
+To my wife and our children
+\end{center}
+
+\newpage
+
+\section*{\centering \MakeUppercase{Abstract}}
+
+The Finite Element Method (FEM) is one of the most popular numerical methods to obtain approximate solutions to Partial Differential Equations (PDEs).
+Due to its wide applicability, robustness and accuracy of its solution, the FEM takes a prominent role in the design and analysis of many engineering applications.
+However, the FEM is also considered a computationally intensive method when used for complex designs requiring accurate modeling.
+As a result, high fidelity FEM simulations create strong demand for scalable High Performance Computing (HPC) systems.
+The FEM's conventional approaches are based on global sparse matrix operations that severely limit the parallel scalability of costly HPC systems.
+
+
+In this work we look into Belief Propagation (BP) inference algorithms to address the FEM's computational bottleneck.
+BP is a message passing algorithm on probabilistic Graphical Models (GMs) used to efficiently compute marginal distributions.
+BP algorithms can exploit the underlying problem's structure of variable interactions to expose more parallelism from its computations.
+A particular instance of BP algorithms is BP on Gaussian models with pairwise interaction (PW-GaBP).
+However, PW-GaBP did not provide the sought numerical efficiency for FEM problems in general due to its large number of iterations.
+Nonetheless, our analysis of using PW-GaBP to solve FEM problems reveals great insights on how to improve the numerical efficiency of BP style algorithms while maintaining its parallelism features.
+
+
+Instead, we developed a novel probabilistic Gaussian GM for the FEM based on Factor Graphs (FEM-FG) by reformulating the FEM problem as a distributed variational inference problem.
+This development facilitates the use of computational inference algorithms such as BP to solve the FEM problem by decoupling it into local systems of low ranks.
+The resulting FEM Gaussian Belief Propagation (FGaBP) algorithm solves the FEM in parallel, element-by-element, eliminating the need for large sparse matrix operations.
+The FGaBP algorithm demonstrates significant parallel scalability; nonetheless, its number if iterations scales linearly with the number of unknowns making it slow for larger FEM problems.
+
+We remedy this by introducing a multigrid adaptation to FGaBP resulting in the fast FMGaBP algorithm.
+The FMGaBP algorithm processes the FEM in a fully distributed and parallel manner, with stencil-like element-by-element operations, while eliminating all sparse algebraic operations.
+To our knowledge, this is the first multigrid formulation for continuous domain Gaussian BP algorithms that is derived directly from a variational formulation of the FEM.
+In comparison with state-of-the-art parallel implementations of the Multigrid Preconditioned Conjugate Gradient (MG-PCG) solver, the FMGaBP algorithm demonstrates considerable speedups for both 2D and 3D FEM problems.
+
+
+\newpage
+
+\section*{\centering \MakeUppercase{ABR\'{E}G\'{E}}}
+
+La m\'ethode des \'el\'ements finis (MEF) est une des approches les plus populaires pour r\'esoudre num\'eriquement des \'equations aux d\'eriv\'ees partielles.
+La MEF s'applique \`a une grande vari\'et\'es de situations et fournit des solutions robustes et pr\'ecises, ce qui lui donne un r\^ole de premier plan dans la conception et l'analyse de plusieurs probl\`eme d'ing\'en\'erie.
+Par contre, la MEF requiert une forte puissance de calcul lorsqu'elle est utilis\'ee pour r\'esoudre des probl\`emes de conception complexes qui n\'ecessitent une mod\'elisation pr\'ecise.
+Pour cette raison, les simulations par MEF \`a haute fid\'elit\'e g\'en\`erent une demande importante pour des syst\`emes de calcul haute performance.
+Les approches conventionnelles utilis\'ees pour la MEF sont bas\'ees sur des op\'erations globales effectu\'ees sur des matrices creuses, ce qui limite s\'ev\`erement les possibilit\'es de parall\'elisation.
+
+La pr\'esente th\`ese s'int\'eresse aux algorithmes d'inf\'erences par Belief Propagation (BP) dans le but de r\'eduire la puissance de calcul n\'ecessaire aux simulations par MEF.
+L'algorithme BP est bas\'e sur des transport de messages \`a l'int\'erieur de r\'eseaux statistiques servant \`a calculer efficacement des distributions marginales.
+Un algorithme BP est \`a m\^eme d'exploiter la structure des interactions entre variables pour exposer une plus grande part d'op\'erations parall\`eles. L'algorithme BP sur r\'eseaux gaussiens avec interactions par paires, ou BP on Gaussian models with pairwise interaction (PW-GaBP), est un type d'algorithme BP bien connu.
+Malheureusement, nous avons constat\'e qu'en g\'en\'eral, cet algorithme n'\'etait pas \`a m\^eme de fournir une efficacit\'e num\'erique suffisante pour se pr\^eter aux simulations par MEF, \`a cause de son nombre d'it\'erations trop important.
+Malgr\'e tout, notre analyse de l'algorithme PW-GaBP utilis\'e dans le cadre de la MEF fournit de bonnes pistes sur la fa\c{c}on d'am\'eliorer l'efficacit\'e num\'erique des algorithmes de style BP, tout en conservant ses propri\'et\'es parall\`eles.
+
+Pour palier aux d\'efauts de l'algorithme PW-GaBP, nous avons d\'evelopp\'e une nouvelle structure de r\'eseau statistique gaussien pour la MEF \`a l'aide de Factor Graphs, en reformulant le probl\`eme de la MEF en tant que probl\`eme d'inf\'erence variationnelle distribu\'ee. Cette reformulation facilite l'utilisation d'algorithmes d'inf\'erence tel que BP pour r\'esoudre des probl\`emes de MEF en les s\'eparant en plusieurs syst\`emes locaux \`a bas rang.
+Nous obtenons ainsi un algorithme appel\'e FEM Gaussian Belief Propagation (FGaBP) qui peut r\'esoudre un syst\`eme de MEF en parall\`ele, \'el\'ement-par-\'el\'ement, \'eliminant ainsi la n\'ecessit\'e d'effectuer des op\'erations complexes sur des matrices creuses.
+L'algorithme FGaBP peut \^etre parall\'elis\'e de fa\c{c}on importante, mais il demande n\'eanmoins un nombre d'it\'erations qui cro\^it lin\'eairement en nombre d'inconnus, ce qui le rend assez lent sur des probl\`emes MEF de grande taille.
+
+Nous am\'eliorons ce dernier point en proposant une adaptation multi-grille de l'algorithme FGaBP pour obtenir un algorithme plus rapide baptis\'e FMGaBP.
+L'algorithme FMGaBP traite le syst\`eme MEF de fa\c{c}on parfaitement distribu\'ee et parall\`ele.
+Les op\'erations se font \'el\'ement-par-\'el\'ement, tout en \'eliminant toutes les op\'erations sur matrices creuses.
+Au meilleur de notre connaissance, il s'agit de la premi\`ere formulation multi-grille pour des algorithmes BP gaussiens d\'eriv\'ee directement d'une formulation variationnelle du syst\`eme MEF.
+Par rapport aux impl\'ementations actuelles de solveurs \`a gradient conjugu\'e multi-grilles, l'algorithme FMGaBP offre des gains substantiels de vitesse pour les calculs de MEF, aussi bien dans le cas des probl\`emes 2D que pour ceux en 3D.
+\newpage
+
+\section*{\centering \MakeUppercase{Acknowledgments}}
+
+I would like to extend my thanks to my advisors, Professor Dennis Giannacopoulos and Professor Warren Gross, for their guidance throughout my research life at McGill University.
+The long discussions we had were all insightful, inspiring, and joyful.
+I am also thankful for the financial support they provided.
+My special thanks to my PhD committee supervisors: Professor David Lowther, Professor Hannah Michalska, and Professor Louis Collins.
+Their insightful comments on my work are greatly appreciated.
+Many thanks to the McGill Faculty of Engineering for offering the MEDA scholarship which provided the needed financial support to start this PhD research.
+
+
+And last but not least, my deepest appreciation goes to my wife Alaa, for her endless love and patience, to my children Malek and Maryam for being their adorable selves, and most of all, to my parents whose unconditional love was a great source of inspiration throughout challenging times.
+%%Fakesection Tables of contents, figures, tables
+%==========
+\tableofcontents
+\listoffigures
+\listoftables
+
+%%Fakesection Acronyms
+%==========
+\begin{singlespace}
+	\setlength{\glsdescwidth}{0.7\linewidth}
+	\renewcommand*{\arraystretch}{0.9}
+	%\printglossary[type=\acronymtype,title=List of Acronyms,nonumberlist]
+	\printnoidxglossary[type=\acronymtype,style=long,title=List of Acronyms,nonumberlist]
+	\renewcommand*{\arraystretch}{1}
+\end{singlespace}
+\newpage
+%\include{Chp-Acr}
+\cleardoublepage
+\pagenumbering{arabic}
+%==========
+
+%%Fakesection Chapters
+%==========
+\include{Chp-Intro}
+%==========
+\include{Chp-Bg}
+%==========
+\include{Chp-PWGaBP}
+%==========
+\include{Chp-RelGaBP}
+%==========
+\include{Chp-FGaBP}
+%==========
+\include{Chp-FMGaBP}
+%==========
+\include{Chp-Fut}
+%==========
+
+%%Fakesection Appendices
+%==========
+\appendix
+
+%==========
+%\include{App-diffCal}
+%==========
+\include{App-GaDiss}
+%==========
+% \include{App-src}
+%==========
+
+%%Fakesection Bibliography
+%==========
+\begin{singlespace}
+	\bibliographystyle{ieeetr}
+	\bibliography{IEEEabrv,thesis_phd_yelk_online}
+\end{singlespace}
+%==========
+
+\end{document}

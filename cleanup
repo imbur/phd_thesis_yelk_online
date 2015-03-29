@@ -1,0 +1,1 @@
+rm -rf *.aux *.bbl *.blg *.log *.acr *.alg *.glg *.glo *.gls *.ist *.acn *.glsdefs *.out *.toc *.lot *.lof

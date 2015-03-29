@@ -1,0 +1,200 @@
+\graphicspath{{./figs/Chp-Intro/}}
+
+\chapter{Introduction}
+\label{chp:intro}
+
+\section{Motivation}
+Mathematical models such as systems of \glspl{acr:pde} are used to describe the behavior of physical phenomena such as electromagnetism, fluid dynamics and material structural properties.
+A prominent example of PDEs is Maxwell's equations describing the propagation of Electromagnetic fields and waves in free space and material.
+The introduction of Maxwell's equations by James Clerk Maxwell in the second half of the nineteenth century \cite{bib:Jin2002TFEMIE} resulted in fundamental impacts on theoretical physics.
+Maxwell's equations are also the foundations behind many of the phenomenal advancements made by engineers in modern age information and communications technologies; such technologies are now pervasive in our day-to-day lives.
+
+
+To unleash the full predictive power of Maxwell's equations in the analysis of electromagnetic fields, engineers must solve the set of Maxwell's PDEs.
+In many practical applications though, closed-form solutions of Maxwell's equations, as well as other PDEs in general, can not be obtained. 
+This is due to the arbitrary geometries of the devices in question and the material involved, which can also exhibit varying physical properties.
+As a result, approximate solutions to PDEs are sought in practice.
+One way of obtaining such solutions is by using numerical techniques such as the \gls{acr:fdm}, the Finite Volume Method (FVM), and the \gls{acr:fem}.
+The \gls{acr:fem} is one of the most popular numerical techniques used by engineers today mainly due to its robust applicability and the accuracy of its solution.
+
+
+The \gls{acr:fem} is a rigorous numerical method that obtains an approximate solution to a system of PDEs by partitioning the continuous domain into discrete non-overlapping and well defined geometrical shapes.
+The discrete shapes are then used to interpolate the approximate solution on the full domain.
+The \gls{acr:fem} became an indispensable part of the design and analysis processes of many engineering applications such as automotive, aerospace, biomedical, electromagnetic, material, power, and structural engineering.  
+In addition, the \gls{acr:fem} is a vital tool used by engineers  in many R\&D teams to accurately model complex technologies and simulate its designs, validate its system-wide specifications and optimize its performance.  
+\gls{acr:fem} modeling and simulation software helps eliminate many of the costly manufacturing procedures, that would have been otherwise needed for product prototyping and field testing, resulting in significantly shorter product design cycles and costs.
+As a result, \gls{acr:fem} analysis are involved in many cutting-edge technologies that are ubiquitous in our day-to-day lives such as consumer electronics, mobile devices, circuits, wireless networks, optics, X-rays and medical imaging; as well as, major industrial technologies such as airplains, motors, turbines, actuators, transformers, sensors, coils and microwaves.
+
+
+However, the \gls{acr:fem} is also considered a computationally intensive method when used for complex designs requiring accurate modeling.
+\gls{acr:fem} models can easily scale to solving for millions or billions of variable parameters.
+As a result, high fidelity \gls{acr:fem} simulations create strong demand for scalable \gls{acr:hpc} hardware.
+Traditionally, CPU manufacturers such as Intel\rtm{} and AMD\rtm{}, used to scale the computational throughput of their CPU architectures by manufacturing CPUs that run at higher frequencies (frequency scaling).
+This allowed \gls{acr:fem} users to accelerate their simulations by simply upgrading their workstations with faster CPUs.
+This also created a trend within the \gls{acr:fem} software industry to rely more on inherently sequential solvers such as the \gls{acr:cg} algorithm to better utilize the single-CPU workstations.
+While demands for \gls{acr:hpc} were met by high-cost CPU-clusters and supercomputers, the inherent inefficiencies in the \gls{acr:fem} software due to sequential algorithms were not obvious.
+
+
+A clear trend emerged in recent years showing that, CPU and \gls{acr:hpc} manufacturers such as Intel\rtm{}, AMD\rtm{}, IBM\rtm{}, and HP\rtm{} are scaling the computational throughput of their computing hardware by introducing more CPU cores in the same chip, referred to as  multicore or manycore chips, which in effect, results in scaling the capacity of computation by means of parallelism as opposed to frequency scaling.
+This trend is enforced as a result of physical and power limitations at the micro-chip level that prevented further frequency scaling.
+A clear sign of this trend is the recent launch of the Xeon Phi\tm{} \cite{bib:Phi} coprocessor by Intel\rtm{} containing up to 61 cores in one silicon chip.
+
+
+The \gls{acr:hpc} manycore parallel trend has introduced difficult challenges to both \gls{acr:fem} software vendors and \gls{acr:fem} software clients.
+FEM vendors, on one hand, need to parallelize their \gls{acr:fem} software in order to better utilize manycore architectures; while clients on the other hand, demand high fidelity accurate \gls{acr:fem} simulations for their increasingly complex designs.
+Such demands create strong constraints for the clients' workflow environment by efficiently utilizing their \gls{acr:hpc} platforms, reducing simulation time, increasing man-hour productivity, and reducing product design cycles.
+
+
+Parallelizing \gls{acr:fem} software is a very difficult task.
+The conventional \gls{acr:fem} software relies on performing global and highly irregular (sparse) algebraic operations that severely limit its parallel performance.
+For example, implementations of \glspl{acr:ksm}, such as the \gls{acr:cg} solver \cite{bib:Saad2003IMFSLS2E}, require global sparse operations which yield poor performance of about 10-20\% of the peak CPU computational throughput \cite{bib:Demmel2007OODMVMOEMP}.
+This performance bottleneck is even more aggravated when high accuracy \gls{acr:fem} analysis scales to large numbers of unknowns, in the order of millions or more, which prevents clients from productively utilizing their \gls{acr:hpc} platforms.
+
+
+Most of the existing \gls{acr:fem} software libraries attempt to improve performance by means of introducing sophisticated programming techniques mainly aimed at accelerating the underlying sparse algebraic operations.
+In contrast, our research aims to attack the root-cause of the problem by reformulating the conventional \gls{acr:fem} in order to completely eliminate the global sparse operations, and perform instead localized dense computations in an embarrassingly parallel manner.
+
+
+To address this challenge, we have investigated \gls{acr:bp} inference algorithms.
+\gls{acr:bp} is a message passing algorithm based on probabilistic \glspl{acr:gm} to efficiently compute marginal distributions.
+We first recast the deterministic \gls{acr:fem} problem as a variational inference problem on a probabilistic graphical model.
+This reformulation inherently eliminates the sparsity bottleneck of the \gls{acr:fem} computation by decoupling the \gls{acr:fem} into isolated local systems of very low ranks referred to as factor node and variable node belief distributions.
+These local belief systems update their states by communicating informative messages in a concurrent manner, which iteratively achieves a global solution as a stationary point of the local systems' consensus on the information flow.
+The concerted play of message communication between localized systems along the edges of the graphical model gives rise to the generalized \gls{acr:fgabp} algorithm.
+The \gls{acr:fgabp} is characterized by a high parallel efficiency due to its distributed and localized computation in addition to its flexible memory communication.
+
+
+While the first version of the \gls{acr:fgabp} algorithm demonstrates convergence behavior that is proportional to the number of unknowns; this poses an issue for large scale \gls{acr:fem} problems with millions of unknowns.
+We remedy this issue by using a multigrid adaptation of our algorithm referred to as the \gls{acr:fmgabp} algorithm, which speeds up the propagation of information on the graphical model by bridging communications between far away nodes.
+The \gls{acr:fmgabp} algorithm results in optimal convergence rates that yields a constant number of operations per unknown independent of the scale of the \gls{acr:fem} problem.
+The numerical analysis of the developed algorithms, shown in chapters \ref{chp:FGaBP} and \ref{chp:FMGaBP}, demonstrates near-linear parallel speedup scalability on multicore CPUs.
+The linear scalability is achieved mainly due to the decoupled localized computation and the reduced iteration count.
+In addition, the \gls{acr:fmgabp} algorithm achieves high parallel efficiency, time speedups, and iteration reductions when compared to state of the art conventional sparse solvers such as the \gls{acr:mgpcg}.
+
+
+\section{Literature Review}
+
+Many attempts, as in \cite{bib:Demmel2007OODMVMOEMP,bib:im2004sparsity,bib:Demmel2002perfOpt,bib:kourtis2008optimizing,bib:Demmel1994Templates,bib:Bulu2009ParSMVM,bib:mellor2004optimizing,bib:David2010PM,bib:willcock2006accelerating,bib:geus1999towards}, were made to improve the performance of the \gls{acr:fem}'s sparse computations at the expense of sophisticated programming techniques that are tailored to specific CPU architectures, such as cache access optimizations, data-structures and code transformations.
+Specialized hardware such as \glspl{acr:gpu} and \glspl{acr:fpga} are also used to offload the sparse kernels from the CPU in order to extract more parallelism and benefit from increased memory bandwidth \cite{bib:shan2010fpga,bib:kestur2012towards,bib:bell2009implementing,bib:sun1999mapping,bib:Zhuo2005SMVMonFPGAs}.
+The work in \cite{bib:Mehridehnavi2013CAGPU,bib:Maryam2011GPUCG,bib:Maryam2010GPUSMVM} presents techniques to accelerate sparse kernels on \glspl{acr:gpu}.
+An \gls{acr:fpga} chip is used in \cite{bib:elkurdi2007hafem,bib:Elkurdi2006FPGASMVM} to accelerate the \gls{acr:smvm} kernel using a custom-hardware made of a systolic pipeline of processing elements operating on specialized striping based data-structures for the sparse matrix.
+However, such optimizations are known to limit code portability and reusability.
+In addition, all such optimizations show that sustaining performance for different \gls{acr:fem} applications with varying sparsity patterns is impossible.
+The work in \cite{bib:DemmelOSKI} focuses on improving the performance of the sparse kernels used by solvers, such as the \gls{acr:smvm}, by employing low-level hardware optimizations and automatic tuning. 
+The use of tuning here is necessary due to the varying sparsity structure of different \gls{acr:fem} applications; however, the tuning process can be very costly and can only be performed during run-time when the sparse matrix is provided by the user.
+
+
+Accelerating \gls{acr:cg} solvers on parallel architectures is communication-bound; recent attempts to improve the communication overhead of such solvers through reformulation, namely communication avoiding schemes, suffer from numerical instability and limited support for preconditioners \cite{bib:Hoemmen2010EECS}.
+Another reformulation approach is presented in \cite{bib:David2012FEMSES} which iteratively solves the \gls{acr:fem} in-place element-by-element without assembling any sparse data-structures.  While this approach resulted in high parallel scalability, it requires a considerably large number of iterations to converge, which reduces the advantages of parallelism.  
+
+
+While existing generic and optimized libraries such as \dealName{} \cite{bib:dealii2007}, GetFEM++ \cite{bib:getfem}, and Trilinos \cite{bib:Trilinos} can be used for sparse FEM computations, obtaining a sustained performance can be difficult due to the varying sparsity structure for different application areas.
+In addition, such libraries can not avoid the costly stage of assembling the large sparse matrix.
+However, the recent work in \cite{bib:Kronbichler2012} uses a matrix free approach to accelerate the \gls{acr:smvm} kernel in the FEM solver.
+While their approach shows promising speedups, it does not depart from the sequential global algebraic setup of the CG solver and limits preconditioning opportunities.
+Our work, in contrast to all of the above, does not mainly target implementation algorithms.
+It instead is based on a higher-level distributed reformulation of the \gls{acr:fem} using \acrfull{acr:bp} that eliminates the need for any sparse data-structures; hence, circumventing the problem's main bottleneck.
+
+
+The \gls{acr:bp} algorithm, as proposed by Pearl in \cite{bib:Pearl88ProbabilisticReasoning}, is a message passing algorithm on graphical models to compute marginal distributions, which was initially developed for tree-based graphical models.
+In practice however, problems generate graphical models containing many loops.
+In loopy models, the \gls{acr:bp} algorithm can be used iteratively to obtain an approximation for the marginals \cite{bib:Pearl88ProbabilisticReasoning,bib:Yedidia2004CFEAAGBPA,bib:Weiss01CorrectnessBelief,bib:Wainwright03tbrfasp}.
+\gls{acr:bp} recently showed excellent empirical results in certain applications such as machine learning, channel decoding, computer vision, signal processing, and bioinformatics \cite{bib:Kschischang2001FGATSA, bib:Wainwright2008GMEFAVI,bib:Luby2001ILDPC,bib:Mceliece98turbodecoding,Richardson2001CLDPC,bib:cv1999,bibSun2003SMU,bib:Frey2001NIPS,bib:Kolmogorov2006ctr,bib:Weiss2005gobp,bib:Szeliski2008CS,bib:sudderth2008signal,bib:mitrofanova2008integrative}.
+
+
+The work in \cite{bib:Kschischang2001FGATSA} shows that \gls{acr:bp} can be viewed as an instance of the generic max-product algorithm operating on factor graph models.
+The work also illustrates that various algorithms developed in artificial intelligence, signal processing and digital communications can be viewed as specific instances of the max-product algorithm.
+Formal representation of graphical models, exponential distributions, and inference algorithms are illustrated in \cite{bib:Wainwright2008GMEFAVI,bib:PGMkoller2009,bib:Kschischang2001FGATSA}.
+The relationship of \gls{acr:bp} on graphical models with free energy approximations are established in \cite{bib:Yedidia2004CFEAAGBPA,bib:Yedidia2000genbp,bib:yedidia2003understanding,bib:weiss2012map}.
+Such work provides great insight for our later development of \gls{acr:bp} based algorithms for the \gls{acr:fem} graphical model.
+
+
+\gls{acr:bp} on models with Gaussian distributions is referred to as Gaussian \gls{acr:bp}.
+The exactness of the marginal means computed by Gaussian \gls{acr:bp} at convergence was established in \cite{bib:Weiss01CorrectnessBelief}.
+In addition, the work provides analytical proofs on the convergence of Gaussian \gls{acr:bp} restricted to diagonal dominance guarantees of the model.
+The convergence condition, however, is expanded later by \cite{bib:Johnson2006WIAGBP,bib:malioutov2006walk} to include walk-summable models.
+Such models are characterized by the algebraic property $\rho\left( \left| I - D^{-1/2}AD^{-1/2} \right|\right) < 1$, where $A$ is the sparse matrix representing the model, $D$ is the diagonal entries of $A$, $I$ is the identity matrix, and $\rho(\cdot)$ is the spectral radius.
+The work in \cite{bib:Shental2008GBPSSLE} introduced the Gaussian \gls{acr:bp} algorithm as a parallel solver for linear systems of equations by modeling these systems as pairwise graphical models.
+While the solver showed great promise for highly parallel computations on diagonally dominant matrices \cite{bib:El-Kurdi2012EIOGBPSFLSDDLS}, it does not scale for large FEM matrices.
+It also fails to converge for high order \gls{acr:fem} problems \cite{bib:El-Kurdi2012FEM-GaBP,bib:El-Kurdi2012RGBP}.
+The work in \cite{bib:Dolev09FC} introduced a method to force convergence of the Gaussian \gls{acr:bp} solver for none walk-summable matrices by perturbing the matrix to force diagonal dominance properties, which is then corrected in a nested Newton iteration.
+Such an approach however, results in a considerably large count of iterations to be useful for large sparse matrices.
+In addition, as a solver, it would still require assembling a large sparse data-structure.
+Our developed \gls{acr:bp} based algorithms for the \gls{acr:fem} eliminate such problems. 
+Also, the multigrid adapted \gls{acr:bp} algorithm referred to as the \gls{acr:fmgabp} is, to our knowledge, the first to use multigrid schemes to accelerate the information propagation on the underlying Gaussian models, hence accelerating the convergence of the \gls{acr:bp} algorithm.
+
+
+Implementation related work aimed at improving the \gls{acr:bp} execution performance by exploiting data-parallelism is presented in \cite{bib:ma2011data,bib:xia2010scalable,bib:Gonzalez2009DPI,bib:Hsieh2012PBP}.
+\Gls{acr:bp} is one of the algorithms used in the library GraphLab \cite{bib:graphlab2010} which implements higher-level parallelism via the MapReduce scheme \cite{bib:dean2008mapreduce} and \gls{acr:mpi} \cite{bib:mpiForum}; nevertheless, it is mainly aimed at machine learning applications.
+The work in \cite{bib:Elidan06ResidualBP,bib:gonzalez2009residual} improves the convergence performance of \gls{acr:bp} by using an informative based scheduling scheme.
+The focus of all these works, however, is mainly based on discrete state variables where the \gls{acr:bp} complexity increases with the number of states and the degree of the nodes, which is the number of incident edges on a particular node.
+Our work, on the other hand, is based on Gaussian variables which are in the real domain with fixed node degrees that are independent of the total number of nodes in the graph.
+The \gls{acr:fem} problem scales differently which is by dramatically increasing the number of elements, or consequently the number of nodes, to orders of millions or more.
+While the node degree may have a considerable influence for certain \gls{acr:fem} problems, it is rather fixed in comparison with the total number of nodes.
+In addition, the convergence performance for \gls{acr:fem} problems can more efficiently be treated using a specialized multigrid scheme for \gls{acr:bp} as we show later in \chpRef{chp:FMGaBP}.
+The \gls{acr:fgabp} and the \gls{acr:fmgabp} algorithms introduced in Chapters \ref{chp:FGaBP} and \ref{chp:FMGaBP} address all of these scalability concerns for the \gls{acr:fem} problem.
+
+
+\section{Contributions}
+\label{sec:cont}
+
+The following are the highlights of the contributions in the thesis:
+\begin{enumerate}
+	\item Implementation oriented scheduling schemes for the \gls{acr:pwgabp} solver aimed for \gls{acr:fem} matrices.
+		We introduce the \gls{acr:hus} for the \gls{acr:pwgabp} solver which better exploits the sparsity structure of the \gls{acr:fem} matrices to improve the parallel execution efficiency while at the same time minimizing the increase in iterations due to the parallel message updates.
+	\item The \gls{acr:rgabp} algorithm which significantly reduces the number of iterations to convergence.
+	\item The \gls{acr:drgabp} algorithm which dynamically adjusts the relaxation factor based on iterative error improvements.
+		The \gls{acr:drgabp} circumvents the complexity of determining an optimal relaxation factor a priori.
+	\item The reformulation of the variational \gls{acr:fem} problem as a variational inference problem which facilitates the use of computational inference algorithms to solve the \gls{acr:fem} problem.
+	\item The \gls{acr:femfg} model for the \glspl{acr:fem} problem which facilitates the derivation of variants of the \gls{acr:fgabp} algorithm.
+	\item The \gls{acr:fgabp} algorithm which solves the \gls{acr:fem} in parallel element-by-element using a matrix-free approach eliminating all global algebraic operations such as \glspl{acr:smvm}.
+	\item The \gls{acr:aufgabp} algorithm variants which reduce the computational complexity of the \gls{acr:fgabp} from $\bigo{n^4}$ to $\bigo{n^2}$ per factor node resulting in significant speedups for higher order and higher dimensionality \gls{acr:fem} problems.
+	\item The element merge solution which improves the \gls{acr:fgabp} parallel efficiency by trading-off CPU flops for memory bandwidth improving the CPU's overall computational throughput.
+	\item The \gls{acr:fmgabp} algorithm which achieves optimal convergence rate of $\bigo{N}$ operations for $N$ unknowns while maintaining all the parallel features of the \gls{acr:fgabp} algorithm of distributed stencil-like element-by-element computations.
+	\item A highly scalable multicore CPU implementation showing speedups against state-of-the-art \gls{acr:fem} open-source software for both the \gls{acr:fem} setup and solve stages.
+	\item A highly scalable manycore GPU implementation showing considerable speedups over multicore CPU. 
+		This implementation was accomplished in collaboration with Dr. Maryam Mehri Dehnavi.
+\end{enumerate}
+
+
+\section{List of Publications}
+Key results from this doctoral research are presented in the following publications:
+\begin{enumerate}
+	\item Y. El-Kurdi, W. J. Gross, and D. Giannacopoulos, ``Efficient Implementation of Gaussian Belief Propagation Solver for Large Sparse Diagonally Dominant Linear Systems,'' IEEE Transactions on Magnetics, vol. 48, no. 2, February 2012, pp. 471-474. 
+	\item Y. El-Kurdi, W. J. Gross, and D. Giannacopoulos, ``Relaxed Gaussian Belief Propagation,'' IEEE International Symposium on Information Theory Proceedings (ISIT), July 2012, pp. 2002-2006.
+	\item Y. El-Kurdi, W. J. Gross, and D. Giannacopoulos, ``Parallel Multigrid Acceleration for the Finite-Element Gaussian Belief Propagation Algorithm,'' IEEE Transactions on Magnetics, vol. 50, no. 2, February 2014, pp. 581-584.
+	\item D. Giannacopoulos, Y. El-Kurdi, W. J. Gross, ``Finite Element Methods and Systems,'' U.S. Patent Application US14/526,651, filed October 28, 2014. Patent Pending.
+\end{enumerate}
+
+
+\section{Computing Resources}
+The author would like to acknowledge the following computing resources which were instrumental in obtaining the results necessary to illustrate the performance of the developed algorithms:
+\begin{itemize}
+	\item The supercomputer Colosse, managed by Calcul Qu\'ebec and Compute Canada.
+		The operation of this supercomputer is funded by: the Canada Foundation for Innovation (CFI); NanoQu\'ebec; RMGA; and the Fonds de recherche du Qu\'ebec~- Nature et technologies (FRQ-NT).
+	\item The supercomputer Sandy at the SciNet HPC Consortium.
+		SciNet is funded by: the Canada Foundation for Innovation under the auspices of Compute Canada; the Government of Ontario; Ontario Research Fund - Research Excellence; and the University of Toronto.
+\end{itemize}
+
+
+\section{Thesis Outline}
+
+The outline of the Thesis is as follows:
+\chpRef{chp:bg} presents the background material such as sparse linear solvers, an overview of the \gls{acr:fem} formulation, probabilistic graphical models, and \gls{acr:bp} inference algorithms.
+\chpRef{chp:PW-GaBP} introduces parallel schedule implementation algorithms.
+It discusses the different scheduling approaches and then presents the \gls{acr:hus} algorithm which offers high parallel efficiency for \gls{acr:bp} execution.
+\chpRef{chp:relGaBP} introduces the \gls{acr:rgabp} and the \gls{acr:drgabp} algorithms which considerably improve the convergence rate of general Gaussian \gls{acr:bp} algorithms.
+\chpRef{chp:FGaBP} details the development of the \gls{acr:fgabp} algorithm.
+The chapter starts by presenting the \gls{acr:fem} as a variational inference problem and introduces the \gls{acr:femfg} model.
+In addition, \chpRef{chp:FGaBP} discusses variations of the \gls{acr:fgabp} algorithm such as lower complexity approximate formulations as well as parallel scheduling schemes, element merging, and parallel implementation techniques.
+\chpRef{chp:FMGaBP} details the \gls{acr:fmgabp} algorithm which is a distributed multigrid adaptation of the \gls{acr:fgabp} algorithm that significantly accelerates convergence.
+The chapter also presents analysis of the algorithm as well as implementation details for both CPU and \gls{acr:gpu} architectures.
+\chpRef{chp:FD} discusses future directions for the current work such as integrating the developed algorithms into \gls{acr:fem} adaptive refinement schemes; and using cluster \glspl{acr:hpc} platforms with \gls{acr:mpi} implementation and specialized partitioning algorithms.
+
+
+
+
+
+
+
+

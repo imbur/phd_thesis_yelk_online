@@ -1,0 +1,1 @@
+git branch | grep -e "Chp-" -e "App-" -e "dict" | xargs git merge

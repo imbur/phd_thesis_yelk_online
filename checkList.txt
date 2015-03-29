@@ -1,0 +1,10 @@
+-  Plurals for:
+  matrix: matrixes not matrices
+  index: indexes
+  vertex: vertexes
+  tetrahedron: tetrahedrons
+  hexahedron: hexahedrons
+  quadrilateral: quadrilaterals
+
+-  Figure
+  -  Change default location from [h] (here) to [t] (top)

@@ -1,0 +1,15 @@
+" silent mkspell! ./dict.add
+" set spellfile=./dict.add
+syntax spell toplevel "It is in the .vimrc, but for some reason does not work to get the spell checker working correctly
+set hidden
+"let g:Tex_DefaultTargetFormat = 'pdf'
+"let g:Tex_CompileRule_pdf = 'make'
+"nmap <Leader>ll ':update!<CR>:make<CR>'
+":vimgrep /\v[^a-zA-Z\-\_]\zsDOF\ze[^a-zA-Z\-\_]/ **/*.tex
+command! -nargs=? AcrSearch execute 'vimgrep /\v[^a-zA-Z\-\_]\zs<args>[s]=\ze[^a-zA-Z\-\_]/ **/*.tex'
+nmap <leader>gp guiw"zyiwciw\glspl{acr:<c-r>z}
+nmap <leader>gl guiw"zyiwciw\gls{acr:<c-r>z}
+nmap <leader>gr guiw"zyiwciw\glsreset{acr:<c-r>z}
+nmap <leader>vg "zyiw:vimgrep /\v[^a-zA-Z\-\_\:]\zs<c-r>z[s]=\ze[^a-zA-Z\-\_\:]/g **/*.tex<cr>
+nmap <leader>eq "zyiwciw\eqnRef{eqn:<c-r>z}
+

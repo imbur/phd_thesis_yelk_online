@@ -1,0 +1,74 @@
+\graphicspath{{figs/Chp-Fut/}}
+\chapter{Future Directions}
+\label{chp:FD}
+
+%%Fakesection Chapter abstract
+The \gls{acr:fgabp} and the \gls{acr:fmgabp} algorithms are newly developed solvers that were implemented with only one purpose in mind, which is to efficiently accelerate the \gls{acr:fem} problem and demonstrate high parallel scalability.
+Therefore, there may be many possibilities to advance the new algorithms just by looking at the wealth of literature developed in the field of numerical methods in the past decades.
+One would find a multitude of methods used to improve the efficiency and the robustness of conventional solvers which could also be applicable here.
+In this chapter we survey some of these ideas and discuss their applicability to the new algorithms, as well as the challenges that may be encountered.
+
+
+\section{Krylov-Subspace Method Preconditioners}
+
+For certain applications, the \gls{acr:fmgabp} algorithm can be very efficient in achieving high convergence; however, many solvers including multigrid can be used as preconditioners in order to improve their robustness especially for complicated applications.
+In using the \gls{acr:fmgabp} or the \gls{acr:fgabp} as a preconditioner, one would be interested in obtaining a robust and efficient convergence rate and, most importantly, increasing the parallel scalability of the conventional \acrfullpl{acr:ksm}.
+By observing \algRef{alg:pcg}, which is presenting the \gls{acr:pcg} solver, we can see that the preconditioner step can be implemented by either the \gls{acr:fgabp} or the \gls{acr:fmgabp}.
+If the \gls{acr:fmgabp} is used, the fast convergence rate should be expected.
+In each \gls{acr:pcg} iteration, the residual is used as the right hand side of the preconditioner system.
+This can be accomplished by distributing the global residual vector among the \glspl{acr:fn} as local source vectors.
+It is important to note here that this distribution of the residual vector to the \glspl{acr:fn} may not be unique.
+For example, one choice is to consider to distribute the residual vector elements evenly to all \glspl{acr:fn} connected to that residual element.
+Another approach would be to use the $\alpha$ messages as weighting factors, since after each consistent \gls{acr:fgabp} iteration the sum of each \gls{acr:vn} edge $\alpha$ messages is equal to the nodal $\alpha$ sum as expressed by the update rule \eqnRef{eqn:vnaSum}.
+The $\beta$ messages are then reinitialized from zero for each \gls{acr:pcg} iteration.
+Note that the $\alpha$ messages need not be reinitialized each \gls{acr:pcg} iteration since they do not depend on the right hand side, or the \glspl{acr:fn} source vectors, and their computation can progressively advance each PCG iteration without being restarted.
+The \gls{acr:fgabp}, or the \gls{acr:fmgabp}, will then be allowed to iterate a number of times based on the desired preconditioning recipe.
+
+
+A difficulty may arise in how to compute the \gls{acr:smvm} operation efficiently as in Step~2 of \algRef{alg:pcg}.
+In this setting we can still avoid assembling the sparse matrix $A$.
+The effect of the \gls{acr:smvm} operation can be obtained by operating on the \glspl{acr:fgabp} data-structure directly.
+In other words, we reuse the \gls{acr:fgabp} data-structure for both the \glspl{acr:smvm} and the precondition operations.
+The unknown vector would be distributed to the \glspl{acr:fn}, and then each \gls{acr:fn} will perform a local dense matrix vector multiplications using its local characteristic matrix and source vector.
+The local results are then gathered using the local to global index information in order to produce the global residual vector.
+This \gls{acr:smvm} parallel operation can be performed in a thread-safe manner when element coloring is used.
+
+\section{FMGaBP for Adaptive Refinement}
+
+The \gls{acr:fmgabp} algorithm demonstrated high computational parallel efficiency compared to state-of-the-art solvers; however, the \gls{acr:fmgabp} algorithm was developed based on global mesh refinement, which can result in unnecessary computations when the local \gls{acr:fem} solution accuracy is considered.
+The \gls{acr:fmgabp} formulation can be extended to supporting adaptive \glspl{acr:fem} refinement by exploiting the local information already present within the \glspl{acr:fn}.
+The resulting adaptive \gls{acr:fmgabp} algorithm would exhibits distributed computations and high parallel efficiency for increasing \gls{acr:fem} solution accuracy.
+
+
+If the adaptive mesh refinement scheme produces conformal meshes, then the \gls{acr:fmgabp} algorithm can readily be used.
+However, if the adaptive mesh refinement scheme produces level meshes that contain hanging-nodes, then the \gls{acr:fmgabp} algorithm would require some reformulation to address this case.
+This scheme of adaptive meshing results in special nodes located at the interface between the refined and the non-refined patches of the mesh.
+Such nodes are referred to as hanging nodes.
+Hanging nodes are termed so because they belong to one side of the mesh, which is the refined side.
+In other words, they have the associated basis functions on one side and have none on the other.
+The library \libName{deal.II} uses adaptive mesh refinement with hanging-nodes for quadrilateral and hexahedral meshes.
+The approach used by \libName{deal.II} involves introducing constraints that ensures the \glspl{acr:fem} solution's continuity across the hanging nodes \cite{bib:janssen2011adaptive}. 
+The \gls{acr:fmgabp} can incorporate similar constraints by applying them on a per \gls{acr:fn} basis similar to the defined local belief system as in \eqnRef{eqn:gaussFB}.
+
+
+\section{FMGaBP MPI Implementation}
+
+In \chpRef{chp:FMGaBP} the \gls{acr:fmgabp} algorithm was scaled for large \gls{acr:fem} problems where the number of elements reaches millions, which is limited only by the memory capacity of the multicore node.
+However, for very large scale \gls{acr:fem} simulations involving billions of unknowns the use of clusters of CPU nodes connected by a network is needed. 
+Each node in the cluster contains a multicore CPU and its own memory space which can be accessed by each of the CPU cores as shared memory.
+Accessing data from one node to another however, has to go through the network which incurs high latency delays.
+The \gls{acr:fmgabp} algorithm, due to its high parallel efficiency, demonstrated great performance when executed within one multicore node.
+It is also expected that the \gls{acr:fmgabp} can demonstrate even more competitive performance when executed on cluster \gls{acr:hpc} systems, given that a good partitioning algorithm is used to distribute the \glspl{acr:fem} problem across the nodes efficiently.
+
+
+Cluster \gls{acr:hpc} systems are very scalable and can handle \gls{acr:fmgabp} problems in the order of billions of unknowns.
+Obtaining linear scaling on these systems however is very challenging due to its dependence on problem partitioning schemes that impacts memory communication and load-balancing.
+Specialized open-source libraries such as \libName{ParMETIS} \cite{bib:parmetis2013} and {P4EST} \cite{bib:p4est} can be used to efficiently partition the
+problem.
+These libraries can be integrated within the \gls{acr:fgabp} algorithm in order to enhance its message communication pattern.
+The \gls{acr:fgabp} software can utilize a hybrid model of multithreading and \gls{acr:mpi} \cite{bib:mpiForum} in order to target the cluster of multicore CPUs.
+The multithreading features will enable the \gls{acr:fgabp} software to efficiently exploit parallelism within the multicore node while the
+\gls{acr:mpi} interface will exploit parallelism between different nodes.
+
+
+

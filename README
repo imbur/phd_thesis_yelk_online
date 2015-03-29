@@ -1,0 +1,9 @@
+Document: PHD Thesis YELK
+Title: Parallel Finite Element Processing Using Gaussian Belief Propagation Inference on Probabilistic Graphical Models
+Name: Yousef El-Kurdi (copyright 2014)
+Email: yousef.el-kurdi@mail.mcgill.ca
+Email-Personal: yelkurdi@gmail.com
+
+IMPORTANT NOTE:
+On linux based system, ensure the most recent version of the following latex packages are installed: glossaries, xfor, etoolbox, or execute the following script (at your own risk :-).
+    $ sudo ./install_latex_pkgs.sh
